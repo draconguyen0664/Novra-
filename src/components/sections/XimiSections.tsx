@@ -19,7 +19,7 @@ export function XimiSections() {
       <section className="ximi-section ximi-ai" id="ai-consultation">
         <div className="shell">
           <EditorialHeading
-            label="01 — AI CONSULTATION"
+            label="AI CONSULTATION"
             lines={['MÔ TẢ WEBSITE', 'BẠN CẦN']}
             copy="Trao đổi về chi phí, tính năng, SEO hoặc ý tưởng — Novra AI tư vấn ngay."
           />
@@ -30,7 +30,7 @@ export function XimiSections() {
       <section className="ximi-section ximi-services" id="services">
         <div className="shell">
           <EditorialHeading
-            label="02 — DỊCH VỤ"
+            label="DỊCH VỤ"
             lines={['WEBSITE &', 'WEB APP', 'CHUYÊN NGHIỆP']}
             copy="Làm website đầy đủ tính năng, cá nhân hóa theo mô hình kinh doanh và tối ưu để khách hàng dễ tin tưởng hơn."
           />
@@ -49,7 +49,7 @@ export function XimiSections() {
 
       <section className="ximi-section ximi-projects" id="selected-projects">
         <div className="shell">
-          <EditorialHeading label="03 — SELECTED PROJECTS" lines={['150+ WEBSITE', 'ĐANG CHẠY THẬT']} />
+          <EditorialHeading label="SELECTED PROJECTS" lines={['150+ WEBSITE', 'ĐANG CHẠY THẬT']} />
           <div className="ximi-project-list">
             {ximiProjects.map((project, index) => (
               <article className={`ximi-project${index % 2 ? ' is-reverse' : ''}`} key={project.name}>
@@ -71,7 +71,7 @@ export function XimiSections() {
         <div className="shell">
           <div className="ximi-benefit-top">
             <EditorialHeading
-              label="04 — LỢI ÍCH"
+              label="LỢI ÍCH"
               lines={['LỢI ÍCH', 'KHI CHỌN', 'NOVRA']}
               copy="Novra làm website dễ dùng, dễ bán hàng, dễ quản lý với chi phí rõ ràng và hỗ trợ sau bàn giao."
             />
@@ -94,7 +94,7 @@ export function XimiSections() {
       <section className="ximi-section ximi-pricing" id="pricing">
         <div className="shell">
           <EditorialHeading
-            label="05 — CHI PHÍ MINH BẠCH"
+            label="CHI PHÍ MINH BẠCH"
             lines={['BẢNG GIÁ', 'DỊCH VỤ']}
             copy="So sánh rõ giá, thời gian, phạm vi và SEO trước khi bắt đầu dự án."
           />
@@ -115,14 +115,14 @@ export function XimiSections() {
 
       <section className="ximi-section ximi-capabilities" id="kho-giao-dien">
         <div className="shell ximi-capability-layout">
-          <EditorialHeading label="06 — KHẢ NĂNG" lines={['WEBSITE GIÚP BẠN', 'LÀM ĐƯỢC GÌ?']} />
+          <EditorialHeading label="KHẢ NĂNG" lines={['WEBSITE GIÚP BẠN', 'LÀM ĐƯỢC GÌ?']} />
           <CapabilitiesAccordion />
         </div>
       </section>
 
       <section className="ximi-section ximi-process" id="process" data-dark>
         <div className="shell">
-          <EditorialHeading label="07 — QUY TRÌNH" lines={['QUY TRÌNH RÕ', 'ĐỂ KHÁCH DỄ KIỂM SOÁT']} />
+          <EditorialHeading label="QUY TRÌNH" lines={['QUY TRÌNH RÕ', 'ĐỂ KHÁCH DỄ KIỂM SOÁT']} />
           <div className="ximi-process-track">
             <div className="ximi-process-line" aria-hidden="true"><span /></div>
             {ximiProcess.map(([number, title, description]) => (
@@ -136,7 +136,7 @@ export function XimiSections() {
 
       <section className="ximi-section ximi-faq" id="faq">
         <div className="shell ximi-faq-layout">
-          <EditorialHeading label="08 — FAQ" lines={['GIẢI ĐÁP NHANH', 'MỌI THẮC MẮC']} />
+          <EditorialHeading label="FAQ" lines={['GIẢI ĐÁP NHANH', 'MỌI THẮC MẮC']} />
           <XimiFaqAccordion />
         </div>
       </section>
@@ -144,7 +144,7 @@ export function XimiSections() {
       <section className="ximi-section ximi-trust" id="about-ximitech">
         <div className="shell">
           <EditorialHeading
-            label="09 — ABOUT / TRUST"
+            label="ABOUT / TRUST"
             lines={['VỀ NOVRA']}
             copy="Novra xây dựng website, web app và công cụ quản lý dễ dùng cho cá nhân, cửa hàng và doanh nghiệp."
           />
@@ -158,7 +158,7 @@ export function XimiSections() {
 
       <section className="ximi-section ximi-final-cta" id="contato" data-dark>
         <div className="shell">
-          <p className="ximi-kicker">10 — BẮT ĐẦU DỰ ÁN</p>
+          <p className="ximi-kicker">BẮT ĐẦU DỰ ÁN</p>
           <h2><span className="ximi-cta-line"><span>BẠN ĐANG CẦN</span></span><span className="ximi-cta-line"><span>MỘT WEBSITE?</span></span></h2>
           <p>Gửi yêu cầu hoặc mẫu tham khảo. Novra sẽ tư vấn giải pháp và phạm vi phù hợp.</p>
           <div className="ximi-cta-actions">
