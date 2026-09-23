@@ -1,0 +1,5 @@
+import { AdminResourceManager, type AdminField } from '@/components/admin/AdminResourceManager';
+const fields: AdminField[] = [
+  { name: 'slugVi', label: 'Vietnamese slug', required: true }, { name: 'slugEn', label: 'English slug', required: true }, { name: 'nameVi', label: 'Vietnamese name', required: true }, { name: 'nameEn', label: 'English name', required: true }, { name: 'descriptionVi', label: 'Vietnamese description', type: 'textarea', required: true }, { name: 'descriptionEn', label: 'English description', type: 'textarea', required: true }, { name: 'contentVi', label: 'Vietnamese content', type: 'textarea', required: true }, { name: 'contentEn', label: 'English content', type: 'textarea', required: true }, { name: 'icon', label: 'Icon URL' }, { name: 'sortOrder', label: 'Sort order', type: 'number' }, { name: 'published', label: 'Published', type: 'checkbox' },
+];
+export default function Page() { return <><header className="admin-page-head"><p>CMS</p><h1>Services</h1></header><AdminResourceManager resource="services" titleField="nameEn" fields={fields} /></>; }

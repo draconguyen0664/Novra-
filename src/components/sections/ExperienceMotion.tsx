@@ -6,9 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const words = ['Experiência', 'Inovação', 'Design', 'Tecnologia'];
-
-export function ExperienceMotion() {
+export function ExperienceMotion({ words, label }: { words: readonly string[]; label: string }) {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const wordRefs = useRef<Array<HTMLParagraphElement | null>>([]);
@@ -113,7 +111,7 @@ export function ExperienceMotion() {
       ref={sectionRef}
       id="experience"
       className="experience experience-section"
-      aria-label="Experiência, inovação, design e tecnologia"
+      aria-label={label}
       data-dark
     >
       <div ref={stageRef} className="experience-stage experience-sticky">

@@ -1,0 +1,18 @@
+import Image from 'next/image';
+import Link from 'next/link';
+import type { Locale, RouteKey } from '@/i18n/config';
+import { localePath } from '@/i18n/config';
+import type { Dictionary } from '@/i18n/dictionaries';
+import { featuredProjects } from '@/data/portfolio';
+
+type DbRecord = Record<string, unknown>;
+
+export function LocalizedPage({ locale, route, dictionary, records }: { locale: Locale; route: Exclude<RouteKey, 'home' | 'contact'>; dictionary: Dictionary; records: DbRecord[] }) {
+  const intro = dictionary.pages[route];
+  return <main id="main"><section className="locale-page ximi-section"><div className="shell"><header className="locale-page-heading"><p className="ximi-kicker">{intro.eyebrow}</p><h1>{intro.title}</h1><p>{intro.copy}</p></header>
+    {route === 'services' && <div className="locale-page-grid">{(records.length ? records.map((record) => ({ title: String(locale === 'vi' ? record.nameVi : record.nameEn), description: String(locale === 'vi' ? record.descriptionVi : record.descriptionEn), key: String(record.id) })) : dictionary.services.items.map((item) => ({ ...item, key: item.title }))).map((item) => <article key={item.key}><span>↗</span><h2>{item.title}</h2><p>{item.description}</p><Link href={`${localePath(locale, 'contact')}?service=consulting`}>{dictionary.navigation.contact}</Link></article>)}</div>}
+    {route === 'projects' && <div className="locale-project-grid">{(records.length ? records.map((record) => ({ id: String(record.id), name: String(locale === 'vi' ? record.titleVi : record.titleEn), description: String(locale === 'vi' ? record.descriptionVi : record.descriptionEn), image: String(record.coverImage), href: `${localePath(locale, 'projects')}/${String(locale === 'vi' ? record.slugVi : record.slugEn)}` })) : featuredProjects.map((project, index) => ({ id: project.name, name: project.name, description: dictionary.selectedProjects.items[index].description, image: project.image, href: project.href }))).map((project) => <article id={project.name.toLowerCase().replace(/\s+/g, '-')} key={project.id}><Link href={project.href}><figure><Image src={project.image} alt={`${dictionary.selectedProjects.imageAlt} ${project.name}`} fill sizes="(max-width:809px) 92vw, 44vw" /></figure><h2>{project.name}</h2><p>{project.description}</p></Link></article>)}</div>}
+    {route === 'pricing' && <div className="locale-page-grid pricing-page-grid">{(records.length ? records.map((record) => ({ key: String(record.key), name: String(locale === 'vi' ? record.nameVi : record.nameEn), description: String(locale === 'vi' ? record.descriptionVi : record.descriptionEn), price: `${Number(record.priceFrom).toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US')} ${String(record.currency)}` })) : dictionary.pricing.plans.map((plan) => ({ key: plan.key, name: plan.name, description: plan.bestFor, price: plan.price }))).map((plan) => <article key={plan.key}><h2>{plan.name}</h2><strong>{plan.price}</strong><p>{plan.description}</p><Link href={`${localePath(locale, 'contact')}?service=${plan.key}`}>{dictionary.navigation.contact}<span>↗</span></Link></article>)}</div>}
+    {route === 'blog' && <div className="locale-page-grid">{records.length ? records.map((record) => <article key={String(record.id)}><h2>{String(locale === 'vi' ? record.titleVi : record.titleEn)}</h2><p>{String(locale === 'vi' ? record.excerptVi : record.excerptEn)}</p><Link href={`${localePath(locale, 'blog')}/${String(locale === 'vi' ? record.slugVi : record.slugEn)}`}>{dictionary.common.learnMore}</Link></article>) : <p className="locale-empty">{dictionary.pages.empty}</p>}</div>}
+  </div></section></main>;
+}

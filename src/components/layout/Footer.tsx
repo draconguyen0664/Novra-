@@ -1,20 +1,13 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
+import { localePath, type Locale } from '@/i18n/config';
+import type { Dictionary } from '@/i18n/dictionaries';
 import { site } from '@/data/site';
 
-const columns = [
-  ['SERVIÇOS', ['Sites em Framer', 'Landing Page', 'Desenvolvimento de SaaS', 'Aplicativos', 'MVP', 'Design de Interfaces', 'Design System', 'Consultoria de Design']],
-  ['CASES', ['Tera', 'Visor', 'Treeunfe', 'Stric', 'Milhas Pix', 'Ver todos os cases']],
-  ['REDES SOCIAIS', ['Instagram', 'Behance', 'Dribbble', 'Linkedin', 'WhatsApp', `E-mail (${site.email})`]],
-] as const;
-
-export function Footer() {
-  return (
-    <footer className="site-footer" data-dark>
-      <div className="shell footer-columns">
-        {columns.map(([title, links]) => <div key={title}><p className="eyebrow">{title}</p>{links.map((label) => <a href={label.startsWith('E-mail') ? `mailto:${site.email}` : site.reference} key={label}>{label}</a>)}</div>)}
-      </div>
-      <div className="shell footer-meta"><p>Campinas - SP<br />Av. Imperatriz D. Teresa Cristina.<br />CNPJ 39.355.398/0001-14</p><p>© Novra 2026</p></div>
-      <Link className="footer-wordmark" href="#hero" aria-label="Voltar ao topo">novra*</Link>
-    </footer>
-  );
+export function Footer({ locale, dictionary }: { locale: Locale; dictionary: Dictionary }) {
+  const serviceKeys = ['business-website', 'landing-page', 'web-app', 'ui-ux', 'seo', 'design-system', 'consulting'];
+  const socialLinks = [site.facebook, site.linkedin, site.zalo, `mailto:${site.email}`];
+  return <footer className="site-footer" data-dark><div className="shell footer-columns">{dictionary.footer.columns.map((column, columnIndex) => <div key={column.title}><p className="eyebrow">{column.title}</p>{column.links.map((label, index) => {
+    const href = columnIndex === 0 ? `${localePath(locale, 'contact')}?service=${serviceKeys[index] || 'other'}` : columnIndex === 1 ? localePath(locale, 'projects') : socialLinks[index] || site.facebook;
+    return <Link href={href} key={label}>{label}</Link>;
+  })}</div>)}</div><div className="shell footer-meta"><p>{dictionary.footer.address.map((line) => <span key={line}>{line}<br /></span>)}</p><p>{dictionary.footer.copyright}</p></div><Link className="footer-wordmark" href={`${localePath(locale, 'home')}#hero`} aria-label={dictionary.common.backToTop}>novra*</Link></footer>;
 }

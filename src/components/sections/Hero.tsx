@@ -1,13 +1,6 @@
+﻿import type { Dictionary } from '@/i18n/dictionaries';
 import { HeroProjectFan } from './HeroProjectFan';
 
-export function Hero() {
-  return (
-    <section id="hero" className="hero">
-      <div className="shell hero-copy">
-        <h1>Design e desenvolvimento de produtos digitais</h1>
-        <p>Uma nova geração de sites, sistemas e aplicativos construídos com design de excelência, valor e sempre superando as expectativas</p>
-      </div>
-      <HeroProjectFan />
-    </section>
-  );
+export function Hero({ dictionary }: { dictionary: Dictionary }) {
+  return <section id="hero" className="hero"><div className="shell hero-copy"><h1>{dictionary.hero.title}</h1><p>{dictionary.hero.copy}</p></div><HeroProjectFan label={dictionary.hero.fanLabel} cardLabel={dictionary.hero.cardLabel} /></section>;
 }

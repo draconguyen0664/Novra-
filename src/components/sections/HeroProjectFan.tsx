@@ -4,22 +4,11 @@ import Image from 'next/image';
 import { useLayoutEffect, useRef, type CSSProperties } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import content from '@/data/content.json';
+import { heroCards } from '@/data/portfolio';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const cardNames = [
-  'Projeto Visor',
-  'Projeto Pepper',
-  'Projeto Vibra',
-  'Projeto Wiz Benefícios',
-  'Projeto Camila Farani',
-  'Projeto KFC Brasil',
-  'Projeto Tera',
-  'Projeto Royal Enfield',
-];
-
-const cardAngles = content.hero.map((_, index) => -52.75 + index * 12.5);
+const cardAngles = heroCards.map((_, index) => -52.75 + index * 12.5);
 const maxAngle = Math.max(...cardAngles.map(Math.abs));
 
 const getInitialCardState = (angle: number) => {
@@ -32,7 +21,7 @@ const getInitialCardState = (angle: number) => {
   };
 };
 
-export function HeroProjectFan() {
+export function HeroProjectFan({ label, cardLabel }: { label: string; cardLabel: string }) {
   const visualRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
   const parallaxRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -164,9 +153,9 @@ export function HeroProjectFan() {
 
   return (
     <div ref={visualRef} className="shell hero-visual">
-      <div className="fan-stage" aria-label="Projetos digitais selecionados">
+      <div className="fan-stage" aria-label={label}>
         <div className="fan-cards">
-          {content.hero.map((card, index) => {
+          {heroCards.map((card, index) => {
             const angle = cardAngles[index];
             const initial = getInitialCardState(angle);
             const style = {
@@ -189,7 +178,7 @@ export function HeroProjectFan() {
                     <div className="fan-card-hover">
                       <Image
                         src={card.src}
-                        alt={cardNames[index]}
+                        alt={`${cardLabel} ${index + 1}`}
                         fill
                         sizes="(max-width:809px) 110px, 300px"
                         priority={index >= 2 && index <= 6}

@@ -1,125 +1,63 @@
-'use client';
+﻿'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { site } from '@/data/site';
+import { localePath, type Locale } from '@/i18n/config';
+import type { Dictionary } from '@/i18n/dictionaries';
 import { AnimatedButton } from './AnimatedButton';
 import { AnimatedNavLink } from './AnimatedNavLink';
-import { LanguageSwitcher, type Language } from './LanguageSwitcher';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
-export function Header() {
+type Props = { locale: Locale; dictionary: Dictionary };
+
+export function Header({ locale, dictionary }: Props) {
   const [open, setOpen] = useState(false);
-  const [language, setLanguage] = useState<Language>('VI');
-  const [activeHref, setActiveHref] = useState(site.navigation[0].href);
+  const pathname = usePathname();
   const toggle = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let frame = 0;
-    const updateActiveLink = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        let next = site.navigation[0].href;
-        site.navigation.forEach((item) => {
-          const id = item.href.split('#')[1];
-          const section = id ? document.getElementById(id) : null;
-          if (section && section.getBoundingClientRect().top <= 120) next = item.href;
-        });
-        setActiveHref(next);
-      });
-    };
-
-    updateActiveLink();
-    window.addEventListener('scroll', updateActiveLink, { passive: true });
-    window.addEventListener('resize', updateActiveLink, { passive: true });
-    window.addEventListener('hashchange', updateActiveLink);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', updateActiveLink);
-      window.removeEventListener('resize', updateActiveLink);
-      window.removeEventListener('hashchange', updateActiveLink);
-    };
-  }, []);
+  const { navigation, common } = dictionary;
+  const items = [
+    { label: navigation.home, href: localePath(locale, 'home') },
+    { label: navigation.services, href: localePath(locale, 'services') },
+    { label: navigation.templates, href: `${localePath(locale, 'home')}#kho-giao-dien` },
+    { label: navigation.projects, href: localePath(locale, 'projects') },
+    { label: navigation.blog, href: localePath(locale, 'blog') },
+    { label: navigation.pricing, href: localePath(locale, 'pricing') },
+  ];
 
   useEffect(() => {
     if (!open) return;
     const prior = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     panel.current?.querySelector<HTMLElement>('a, button')?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setOpen(false);
-        toggle.current?.focus();
-        return;
-      }
+    const keyboard = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setOpen(false); toggle.current?.focus(); return; }
       if (event.key !== 'Tab' || !panel.current) return;
-
-      const focusable = [
-        ...panel.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
-        toggle.current,
-      ].filter((element): element is HTMLElement => Boolean(element));
+      const focusable = [...panel.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'), toggle.current].filter((element): element is HTMLElement => Boolean(element));
       const current = focusable.indexOf(document.activeElement as HTMLElement);
       event.preventDefault();
       const direction = event.shiftKey ? -1 : 1;
       focusable[(current + direction + focusable.length) % focusable.length]?.focus();
     };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = prior;
-      document.removeEventListener('keydown', handleKeyDown);
-    };
+    document.addEventListener('keydown', keyboard);
+    return () => { document.body.style.overflow = prior; document.removeEventListener('keydown', keyboard); };
   }, [open]);
 
-  const closeMenu = () => setOpen(false);
-  const navigation = (mobile = false) => site.navigation.map((item) => (
-    <AnimatedNavLink
-      key={`${mobile ? 'mobile' : 'desktop'}-${item.href}`}
-      href={item.href}
-      label={item.label}
-      active={activeHref === item.href}
-      onClick={() => {
-        setActiveHref(item.href);
-        closeMenu();
-      }}
-    />
-  ));
+  const close = () => setOpen(false);
+  const navigationLinks = (mobile = false) => items.map((item) => <AnimatedNavLink key={`${mobile ? 'mobile' : 'desktop'}-${item.href}`} href={item.href} label={item.label} active={item.href.split('#')[0] === pathname && !item.href.includes('#')} onClick={close} />);
 
-  return (
-    <header className={`site-header ${open ? 'menu-open' : ''}`}>
-      <nav className="shell flex items-center justify-between" aria-label="Navegação principal">
-        <Link href="/#hero" className="brand" aria-label="Novra — Trang chủ" onClick={closeMenu}>
-          <Image src="/media/novra-logo.png" alt="Novra" width={104} height={24} priority />
-        </Link>
-
-        <div className="desktop-nav flex items-center">{navigation()}</div>
-
-        <div className="header-actions flex items-center">
-          <div className="desktop-language">
-            <LanguageSwitcher value={language} onChange={setLanguage} />
-          </div>
-          <AnimatedButton href="/#contato" onClick={closeMenu} />
-          <button
-            ref={toggle}
-            type="button"
-            className="menu-toggle"
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            aria-label={open ? 'Fechar menu' : 'Abrir menu'}
-            onClick={() => setOpen((current) => !current)}
-          >
-            <span />
-            <span />
-          </button>
-        </div>
-      </nav>
-
-      <div ref={panel} id="mobile-menu" className="mobile-menu" hidden={!open}>
-        <div className="mobile-navigation">{navigation(true)}</div>
-        <LanguageSwitcher mobile value={language} onChange={setLanguage} />
+  return <header className={`site-header ${open ? 'menu-open' : ''}`}>
+    <nav className="shell flex items-center justify-between" aria-label={common.mainNavigation}>
+      <Link href={localePath(locale, 'home')} className="brand" aria-label={`Novra — ${navigation.home}`} onClick={close}><Image src="/media/novra-logo.png" alt="Novra" width={104} height={24} priority /></Link>
+      <div className="desktop-nav flex items-center">{navigationLinks()}</div>
+      <div className="header-actions flex items-center">
+        <div className="desktop-language"><LanguageSwitcher locale={locale} labels={common} /></div>
+        <AnimatedButton href={localePath(locale, 'contact')} label={navigation.cta} mobileLabel={navigation.contact} onClick={close} />
+        <button ref={toggle} type="button" className="menu-toggle" aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? common.closeMenu : common.openMenu} onClick={() => setOpen((value) => !value)}><span /><span /></button>
       </div>
-    </header>
-  );
+    </nav>
+    <div ref={panel} id="mobile-menu" className="mobile-menu" hidden={!open}><div className="mobile-navigation">{navigationLinks(true)}</div><LanguageSwitcher mobile locale={locale} labels={common} onNavigate={close} /></div>
+  </header>;
 }
