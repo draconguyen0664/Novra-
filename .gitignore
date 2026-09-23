@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.env*
+!.env.example
+*.tsbuildinfo
+
+# Generated visual QA artifacts
+docs/comparisons/
+docs/experience-motion/
+docs/motion-v2/
+docs/qa/
+docs/reference/

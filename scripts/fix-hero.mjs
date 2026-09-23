@@ -1,0 +1,4 @@
+﻿import fs from 'node:fs/promises';
+await fs.appendFile('src/app/globals.css','\n.hero h1{text-wrap:balance}.hero-copy p{font-weight:200;letter-spacing:.01em}.fan-card{transform:translateX(-50%) rotate(calc(var(--angle) + var(--phase,0deg)))}\n@media(max-width:809px){.fan-stage{width:642px;height:332px;left:50%;top:-59px;transform:translateX(-50%);overflow:hidden}}\n');
+let s=await fs.readFile('src/animations/MotionController.tsx','utf8');s=s.replace("{rotation:12.5,duration:9,repeat:-1,yoyo:true,ease:'sine.inOut'}","{'--phase':'12.5deg',duration:9,repeat:-1,yoyo:true,ease:'sine.inOut'}");await fs.writeFile('src/animations/MotionController.tsx',s);
+let config=await fs.readFile('next.config.ts','utf8');config=config.replace('poweredByHeader: false','devIndicators: false, poweredByHeader: false');await fs.writeFile('next.config.ts',config);
