@@ -10,3 +10,6 @@ docs/experience-motion/
 docs/motion-v2/
 docs/qa/
 docs/reference/
+
+# Local Netlify folder
+.netlify
