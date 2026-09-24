@@ -13,5 +13,5 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) return NextResponse.json({ ok: false, code: 'VALIDATION_ERROR' }, { status: 400 });
     await prisma.newsletterSubscriber.upsert({ where: { email: parsed.data.email.toLowerCase() }, create: { email: parsed.data.email.toLowerCase(), locale: parsed.data.locale }, update: { locale: parsed.data.locale, active: true } });
     return NextResponse.json({ ok: true }, { status: 201 });
-  } catch (error) { console.error('Newsletter subscription failed', error); return NextResponse.json({ ok: false, code: 'INTERNAL_ERROR' }, { status: 500 }); }
+  } catch (error) { console.error('Newsletter subscription failed', error); const invalidJson = error instanceof Error && error.message === 'INVALID_JSON'; return NextResponse.json({ ok: false, code: invalidJson ? 'INVALID_JSON' : 'INTERNAL_ERROR' }, { status: invalidJson ? 400 : 500 }); }
 }

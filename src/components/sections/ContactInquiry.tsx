@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import type { Locale } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionaries';
@@ -11,8 +11,6 @@ import { budgetIds, contactMethodIds, createContactSchema, serviceIds, type Cont
 import { site } from '@/data/site';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const initialStartedAt = Date.now();
 
 type Props = { locale: Locale; dictionary: Dictionary; initialService?: string; standalone?: boolean };
 
@@ -24,10 +22,14 @@ export function ContactInquiry({ locale, dictionary, initialService, standalone 
   const schema = createContactSchema(copy.validation);
   const { register, handleSubmit, control, setValue, reset, formState: { errors, isSubmitting } } = useForm<ContactFormInput, unknown, ContactFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: '', phone: '', company: '', email: '', services: validInitialService ? [validInitialService] : [], details: '', locale, source: standalone ? 'contact-page' : 'homepage', website: '', startedAt: initialStartedAt },
+    defaultValues: { name: '', phone: '', company: '', email: '', services: validInitialService ? [validInitialService] : [], details: '', locale, source: standalone ? 'contact-page' : 'homepage', website: '', startedAt: 0 },
   });
   const selectedServices = useWatch({ control, name: 'services' }) || [];
   const selectedBudget = useWatch({ control, name: 'budget' });
+
+  useEffect(() => {
+    setValue('startedAt', Date.now(), { shouldDirty: false });
+  }, [setValue]);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -49,7 +51,7 @@ export function ContactInquiry({ locale, dictionary, initialService, standalone 
       const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
       if (!response.ok) throw new Error('SUBMIT_FAILED');
       setStatus('success');
-      reset({ name: '', phone: '', company: '', email: '', services: validInitialService ? [validInitialService] : [], details: '', locale, source: standalone ? 'contact-page' : 'homepage', website: '', startedAt: initialStartedAt });
+      reset({ name: '', phone: '', company: '', email: '', services: validInitialService ? [validInitialService] : [], details: '', locale, source: standalone ? 'contact-page' : 'homepage', website: '', startedAt: values.startedAt });
     } catch { setStatus('error'); }
   };
 
@@ -72,7 +74,7 @@ export function ContactInquiry({ locale, dictionary, initialService, standalone 
         <div className="inquiry-field-grid">
           <label className="inquiry-field"><span>{copy.fields.name} *</span><input autoComplete="name" placeholder={copy.placeholders.name} {...register('name')} />{errors.name && <small>{errors.name.message}</small>}</label>
           <label className="inquiry-field"><span>{copy.fields.phone} *</span><input autoComplete="tel" inputMode="tel" placeholder={copy.placeholders.phone} {...register('phone')} />{errors.phone && <small>{errors.phone.message}</small>}</label>
-          <label className="inquiry-field"><span>{copy.fields.company}</span><input autoComplete="organization" placeholder={copy.placeholders.company} {...register('company')} /></label>
+          <label className="inquiry-field"><span>{copy.fields.company}</span><input autoComplete="organization" placeholder={copy.placeholders.company} {...register('company')} />{errors.company && <small>{errors.company.message}</small>}</label>
           <label className="inquiry-field"><span>{copy.fields.email} *</span><input autoComplete="email" inputMode="email" placeholder={copy.placeholders.email} {...register('email')} />{errors.email && <small>{errors.email.message}</small>}</label>
         </div>
         <fieldset className="inquiry-group"><legend>{copy.fields.service} *</legend><div className="inquiry-pills">{serviceIds.map((service) => <button type="button" key={service} className={selectedServices.includes(service) ? 'is-selected' : ''} aria-pressed={selectedServices.includes(service)} onClick={() => toggleService(service)}>{copy.services[service]}</button>)}</div>{errors.services && <small>{errors.services.message}</small>}</fieldset>

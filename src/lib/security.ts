@@ -38,5 +38,9 @@ export async function readJsonBody(request: NextRequest, maxBytes = 16_384): Pro
   if (length > maxBytes) throw new Error('PAYLOAD_TOO_LARGE');
   const text = await request.text();
   if (Buffer.byteLength(text, 'utf8') > maxBytes) throw new Error('PAYLOAD_TOO_LARGE');
-  return JSON.parse(text) as unknown;
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    throw new Error('INVALID_JSON');
+  }
 }

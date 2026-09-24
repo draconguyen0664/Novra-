@@ -81,7 +81,7 @@ export const en = {
     budgets: { 'under-5m': 'Under 5M VND', '5-10m': '5–10M VND', '10-30m': '10–30M VND', '30-50m': '30–50M VND', 'above-50m': 'Above 50M VND', unsure: 'Not sure yet' },
     contactMethods: { phone: 'Phone', zalo: 'Zalo', email: 'Email' },
     submit: 'Submit inquiry', submitting: 'Sending...', success: 'Thank you. Novra has received your inquiry and will contact you soon.', error: 'We could not send your inquiry. Please try again or contact us directly.', requiredMark: 'required',
-    validation: { name: 'Please enter your name.', email: 'Please enter a valid email.', phone: 'Please enter a valid phone number.', service: 'Please select at least one service.', budget: 'Please select a budget.', details: 'Please describe your project in at least 20 characters.' },
+    validation: { name: 'Please enter a valid name (up to 100 characters).', company: 'Company name must be 120 characters or fewer.', email: 'Please enter a valid email.', phone: 'Please enter a valid phone number.', service: 'Please select at least one service.', budget: 'Please select a budget.', details: 'Please describe your project in at least 20 characters.' },
   },
   finalCta: { kicker: 'START A PROJECT', heading: ['DO YOU NEED', 'A WEBSITE?'], copy: 'Send your requirements or a reference. Novra will recommend the right solution and scope.', button: 'Get advice and a quote' },
   footer: {

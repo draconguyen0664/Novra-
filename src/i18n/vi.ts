@@ -176,7 +176,7 @@ export const vi = {
     success: 'Cảm ơn bạn. Novra đã nhận được yêu cầu và sẽ liên hệ sớm.',
     error: 'Không thể gửi yêu cầu. Vui lòng thử lại hoặc liên hệ trực tiếp.',
     requiredMark: 'bắt buộc',
-    validation: { name: 'Vui lòng nhập họ tên.', email: 'Email không hợp lệ.', phone: 'Số điện thoại không hợp lệ.', service: 'Vui lòng chọn ít nhất một dịch vụ.', budget: 'Vui lòng chọn ngân sách.', details: 'Vui lòng mô tả dự án ít nhất 20 ký tự.' },
+    validation: { name: 'Vui lòng nhập họ tên hợp lệ (tối đa 100 ký tự).', company: 'Tên công ty không được vượt quá 120 ký tự.', email: 'Email không hợp lệ.', phone: 'Số điện thoại không hợp lệ.', service: 'Vui lòng chọn ít nhất một dịch vụ.', budget: 'Vui lòng chọn ngân sách.', details: 'Vui lòng mô tả dự án ít nhất 20 ký tự.' },
   },
   finalCta: {
     kicker: 'BẮT ĐẦU DỰ ÁN',

@@ -18,5 +18,5 @@ export async function POST(request: NextRequest) {
     if (!response.ok) throw new Error(`AI provider returned ${response.status}`);
     const body = await response.json() as { output_text?: string };
     return NextResponse.json({ ok: true, configured: true, reply: body.output_text || dictionary.aiConsultation.unavailable });
-  } catch (error) { console.error('AI consultation failed', error); return NextResponse.json({ ok: false, code: 'INTERNAL_ERROR' }, { status: 500 }); }
+  } catch (error) { console.error('AI consultation failed', error); const invalidJson = error instanceof Error && error.message === 'INVALID_JSON'; return NextResponse.json({ ok: false, code: invalidJson ? 'INVALID_JSON' : 'INTERNAL_ERROR' }, { status: invalidJson ? 400 : 500 }); }
 }

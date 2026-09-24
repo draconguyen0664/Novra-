@@ -18,5 +18,5 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ ok: true });
     response.cookies.set(sessionCookie.name, createSessionToken({ userId: user.id, email: user.email, role: 'ADMIN' }), sessionCookie.options);
     return response;
-  } catch (error) { console.error('Admin login failed', error); return NextResponse.json({ ok: false, code: 'INTERNAL_ERROR' }, { status: 500 }); }
+  } catch (error) { console.error('Admin login failed', error); const invalidJson = error instanceof Error && error.message === 'INVALID_JSON'; return NextResponse.json({ ok: false, code: invalidJson ? 'INVALID_CREDENTIALS' : 'INTERNAL_ERROR' }, { status: invalidJson ? 401 : 500 }); }
 }

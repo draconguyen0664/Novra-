@@ -18,7 +18,12 @@ export async function POST(request: NextRequest) {
     const locale = isLocale(localeCandidate) ? localeCandidate : 'vi';
     const dictionary = await getDictionary(locale);
     const result = createContactSchema(dictionary.contact.validation).safeParse(raw);
-    if (!result.success) return NextResponse.json({ ok: false, code: 'VALIDATION_ERROR', fields: result.error.flatten().fieldErrors }, { status: 400 });
+    if (!result.success) {
+      const allFields = result.error.flatten().fieldErrors;
+      const publicFields = ['name', 'phone', 'company', 'email', 'services', 'budget', 'details'] as const;
+      const fields = Object.fromEntries(publicFields.flatMap((field) => allFields[field]?.length ? [[field, allFields[field]]] : []));
+      return NextResponse.json({ ok: false, code: 'VALIDATION_ERROR', fields }, { status: 400 });
+    }
     if (result.data.website) return NextResponse.json({ ok: true });
     if (Date.now() - result.data.startedAt < 1500) return NextResponse.json({ ok: false, code: 'SPAM_DETECTED' }, { status: 400 });
 
@@ -32,7 +37,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, id: inquiry.id, emailSent }, { status: 201 });
   } catch (error) {
     console.error('Contact inquiry failed', error);
-    const status = error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 500;
-    return NextResponse.json({ ok: false, code: status === 413 ? 'PAYLOAD_TOO_LARGE' : 'INTERNAL_ERROR' }, { status });
+    const bodyError = error instanceof Error ? error.message : '';
+    const status = bodyError === 'PAYLOAD_TOO_LARGE' ? 413 : bodyError === 'INVALID_JSON' ? 400 : 500;
+    const code = status === 413 ? 'PAYLOAD_TOO_LARGE' : status === 400 ? 'INVALID_JSON' : 'INTERNAL_ERROR';
+    return NextResponse.json({ ok: false, code }, { status });
   }
 }
