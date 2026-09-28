@@ -48,12 +48,9 @@ export function XimiMotion() {
         });
         const aiTimeline = gsap.timeline({ scrollTrigger: { trigger: '.ximi-ai-interface', start: 'top 82%', once: true } });
         aiTimeline
-          .fromTo('.ximi-chat-bubble', { y: 36, scale: 0.94, rotation: -1.5, autoAlpha: 0 }, { y: 0, scale: 1, rotation: 0, autoAlpha: 1, duration: 0.72, stagger: 0.14, ease: 'power3.out' })
-          .fromTo('.ximi-ai-panel', { y: 70, clipPath: 'inset(16% 0 0 0)', autoAlpha: 0 }, { y: 0, clipPath: 'inset(0% 0 0 0)', autoAlpha: 1, duration: 0.9, ease: 'power4.out' }, 0.16)
-          .fromTo('.ximi-suggestions button', { x: -12, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.42, stagger: 0.065, ease: 'power2.out' }, 0.58);
-        gsap.to('.ximi-chat-user', { y: -7, rotation: 0.4, duration: 3.4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-        gsap.to('.ximi-chat-ai', { y: 6, rotation: -0.35, duration: 3.9, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-
+          .fromTo('.ximi-ai-panel', { y: 40, scale: 0.985, autoAlpha: 0 }, { y: 0, scale: 1, autoAlpha: 1, duration: 0.8, ease: 'power3.out' })
+          .fromTo('.ximi-chat-initial', { x: -8, y: 12, autoAlpha: 0 }, { x: 0, y: 0, autoAlpha: 1, duration: 0.55, ease: 'power3.out' }, 0.22)
+          .fromTo('.ximi-ai-quick, .ximi-ai-composer, .ximi-ai-note', { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.52, stagger: 0.1, ease: 'power3.out' }, 0.38);
         gsap.fromTo('.ximi-service-row', { clipPath: 'inset(0 0 100% 0)', xPercent: -2 }, {
           clipPath: 'inset(0 0 0% 0)', xPercent: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out',
           scrollTrigger: { trigger: '.ximi-service-list', start: 'top 80%', once: true },
