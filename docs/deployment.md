@@ -8,7 +8,7 @@
 6. Run `npm ci`, `npm run prisma:generate`, `npm run db:migrate` and `npm run build`.
 7. Create the first admin with `npm run admin:create`.
 
-Optional AI consultation requires `OPENAI_API_KEY` and may override `OPENAI_MODEL`.
+Working AI consultation requires the server-only `OPENAI_API_KEY` in both local `.env.local` and the production Functions environment. Do not use a `NEXT_PUBLIC_` prefix. `OPENAI_MODEL` is optional and defaults to `gpt-5-mini`.
 
 Uploaded images are represented by URLs. `src/lib/storage.ts` defines the adapter boundary; connect an object storage provider before enabling file upload controls in the CMS. Next.js only optimizes remote images under `CMS_IMAGE_BASE_URL`; rebuild after changing this value.
 

@@ -5,17 +5,30 @@ import gsap from 'gsap';
 import type { Locale } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionaries';
 
+type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+};
+
+type AiResponse =
+  | { success: true; message: string }
+  | { success: false; code?: string; message?: string };
+
 export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['aiConsultation'] }) {
   const [prompt, setPrompt] = useState('');
-  const [submittedPrompt, setSubmittedPrompt] = useState('');
-  const [reply, setReply] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { id: 'initial', role: 'assistant', content: copy.initialMessage },
+  ]);
   const [notice, setNotice] = useState('');
-  const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [failedMessage, setFailedMessage] = useState('');
+  const [state, setState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const streamRef = useRef<HTMLDivElement>(null);
-  const userBubbleRef = useRef<HTMLParagraphElement>(null);
-  const assistantBubbleRef = useRef<HTMLParagraphElement>(null);
-  const loading = state === 'loading';
+  const messageElements = useRef(new Map<string, HTMLParagraphElement>());
+  const messageSequence = useRef(0);
+  const lastAnimatedId = useRef('initial');
+  const submitting = state === 'submitting';
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -26,50 +39,80 @@ export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['a
 
   useEffect(() => {
     streamRef.current?.scrollTo({ top: streamRef.current.scrollHeight, behavior: 'smooth' });
-  }, [submittedPrompt, reply, state]);
+  }, [messages, notice, state]);
 
   useLayoutEffect(() => {
-    if (!submittedPrompt || !userBubbleRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    gsap.fromTo(userBubbleRef.current, { x: 8, y: 12, autoAlpha: 0 }, { x: 0, y: 0, autoAlpha: 1, duration: 0.52, ease: 'power3.out' });
-  }, [submittedPrompt]);
+    const latest = messages.at(-1);
+    if (!latest || latest.id === 'initial' || latest.id === lastAnimatedId.current) return;
+    lastAnimatedId.current = latest.id;
+    const element = messageElements.current.get(latest.id);
+    if (!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  useLayoutEffect(() => {
-    if (!reply || !assistantBubbleRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    gsap.fromTo(assistantBubbleRef.current, { x: -8, y: 12, autoAlpha: 0 }, { x: 0, y: 0, autoAlpha: 1, duration: 0.56, ease: 'power3.out' });
-  }, [reply]);
+    gsap.fromTo(
+      element,
+      { x: latest.role === 'user' ? 8 : -8, y: 12, autoAlpha: 0 },
+      { x: 0, y: 0, autoAlpha: 1, duration: latest.role === 'user' ? 0.52 : 0.56, ease: 'power3.out' },
+    );
+    return () => { gsap.killTweensOf(element); };
+  }, [messages]);
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const message = prompt.trim();
-    if (!message || loading) return;
+  const nextMessageId = (role: ChatMessage['role']) => `${role}-${Date.now()}-${messageSequence.current++}`;
 
-    setSubmittedPrompt(message);
+  const noticeForCode = (code?: string) => {
+    if (code === 'RATE_LIMITED') return copy.rateLimited;
+    if (code === 'AI_NOT_CONFIGURED') return copy.unavailable;
+    return copy.error;
+  };
+
+  const sendMessage = async (rawMessage: string, retry = false) => {
+    const message = rawMessage.trim();
+    if (!message || submitting) return;
+
+    const lastMessage = messages.at(-1);
+    const historyMessages = retry && lastMessage?.role === 'user' && lastMessage.content === message
+      ? messages.slice(0, -1)
+      : messages;
+
+    if (!retry) {
+      setMessages((current) => [...current, { id: nextMessageId('user'), role: 'user', content: message }]);
+    }
     setPrompt('');
-    setReply('');
     setNotice('');
-    setState('loading');
+    setFailedMessage('');
+    setState('submitting');
 
     try {
       const response = await fetch('/api/ai-consultation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, locale }),
+        body: JSON.stringify({
+          message,
+          locale,
+          history: historyMessages.slice(-16).map(({ role, content }) => ({ role, content })),
+        }),
       });
-      const body = await response.json() as { configured?: boolean; reply?: string };
-      if (!response.ok || !body.reply) throw new Error('AI_FAILED');
+      const body = await response.json().catch(() => null) as AiResponse | null;
 
-      if (body.configured === false) {
-        setNotice(copy.unavailable);
+      if (!response.ok || !body || body.success !== true || !body.message) {
+        const code = body && body.success === false ? body.code : undefined;
+        setNotice(noticeForCode(code));
+        setFailedMessage(message);
         setState('error');
         return;
       }
 
-      setReply(body.reply);
+      setMessages((current) => [...current, { id: nextMessageId('assistant'), role: 'assistant', content: body.message }]);
       setState('success');
     } catch {
       setNotice(copy.error);
+      setFailedMessage(message);
       setState('error');
     }
+  };
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void sendMessage(prompt);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -90,27 +133,43 @@ export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['a
           <div className="ximi-ai-status"><span aria-hidden="true" />{copy.status}</div>
         </header>
 
-        <div ref={streamRef} className="ximi-chat-stream" role="log" aria-live="polite" aria-label={copy.conversationLabel}>
-          <p className="ximi-chat-bubble ximi-chat-ai ximi-chat-initial"><span className="ximi-chat-icon" aria-hidden="true">✦</span>{copy.initialMessage}</p>
-          {submittedPrompt && <p ref={userBubbleRef} className="ximi-chat-bubble ximi-chat-user">{submittedPrompt}</p>}
-          {loading && <div className="ximi-chat-bubble ximi-chat-ai ximi-chat-typing" aria-label={copy.sending}><span /><span /><span /></div>}
-          {reply && <p ref={assistantBubbleRef} className="ximi-chat-bubble ximi-chat-ai"><span className="ximi-chat-icon" aria-hidden="true">✦</span>{reply}</p>}
+        <div ref={streamRef} className="ximi-chat-stream" role="log" aria-live="polite" aria-busy={submitting} aria-label={copy.conversationLabel}>
+          {messages.map((message) => (
+            <p
+              key={message.id}
+              ref={(element) => {
+                if (element) messageElements.current.set(message.id, element);
+                else messageElements.current.delete(message.id);
+              }}
+              className={`ximi-chat-bubble ximi-chat-${message.role === 'assistant' ? 'ai' : 'user'}${message.id === 'initial' ? ' ximi-chat-initial' : ''}`}
+            >
+              {message.role === 'assistant' && <span className="ximi-chat-icon" aria-hidden="true">✦</span>}
+              <span>{message.content}</span>
+            </p>
+          ))}
+          {submitting && <div className="ximi-chat-bubble ximi-chat-ai ximi-chat-typing" aria-label={copy.sending}><span /><span /><span /></div>}
         </div>
 
-        {notice && <p className="ximi-ai-notice" role="status"><span aria-hidden="true">i</span>{notice}</p>}
+        {notice && (
+          <div className="ximi-ai-notice" role="status">
+            <span aria-hidden="true">i</span>
+            <span className="ximi-ai-notice-copy">{notice}</span>
+            {failedMessage && <button className="ximi-ai-retry" type="button" disabled={submitting} onClick={() => void sendMessage(failedMessage, true)}>{copy.retry}</button>}
+          </div>
+        )}
 
         <div className="ximi-ai-quick">
           <p>{copy.suggestionsLabel}</p>
           <div className="ximi-suggestions">
-            {copy.suggestions.map((suggestion) => <button type="button" key={suggestion} onClick={() => { setPrompt(suggestion); textareaRef.current?.focus(); }}>{suggestion}</button>)}
+            {copy.suggestions.map((suggestion) => <button type="button" key={suggestion.label} disabled={submitting} onClick={() => void sendMessage(suggestion.prompt)}>{suggestion.label}</button>)}
           </div>
         </div>
 
         <div className="ximi-ai-composer">
           <label className="ximi-visually-hidden" htmlFor="novra-ai-prompt">{copy.inputLabel}</label>
-          <textarea ref={textareaRef} id="novra-ai-prompt" rows={1} value={prompt} onChange={(event) => setPrompt(event.target.value)} onKeyDown={handleKeyDown} placeholder={copy.placeholder} maxLength={2000} />
-          <button className="ximi-ai-send" type="submit" aria-label={copy.sendAria} disabled={loading || !prompt.trim()}>
-            <span>{loading ? copy.sending : copy.send}</span>
+          <textarea ref={textareaRef} id="novra-ai-prompt" rows={1} value={prompt} onChange={(event) => setPrompt(event.target.value)} onKeyDown={handleKeyDown} placeholder={copy.placeholder} maxLength={3000} />
+          <button className="ximi-ai-send" type="submit" aria-label={copy.sendAria} disabled={submitting || !prompt.trim()}>
+            <span>{submitting ? copy.sending : copy.send}</span>
             <span className="ximi-ai-send-arrow" aria-hidden="true">↗</span>
           </button>
         </div>
