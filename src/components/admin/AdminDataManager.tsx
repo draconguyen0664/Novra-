@@ -3,7 +3,7 @@
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -30,12 +30,19 @@ export function AdminDataManager({ resource, titleField, fields, sortable = fals
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const endpoint = '/api/admin/cms/' + resource;
 
-  const load = async () => {
+  const load = useCallback(async () => {
     const response = await fetch(endpoint);
     const body = await response.json();
     setItems(Array.isArray(body.data) ? body.data : []);
-  };
-  useEffect(() => { void load(); }, [endpoint]);
+  }, [endpoint]);
+  useEffect(() => {
+    let active = true;
+    void fetch(endpoint)
+      .then((response) => response.json())
+      .then((body) => { if (active) setItems(Array.isArray(body.data) ? body.data : []); })
+      .catch(() => { if (active) setNotice('Không thể tải dữ liệu.'); });
+    return () => { active = false; };
+  }, [endpoint]);
   useEffect(() => { reset(Object.fromEntries(fields.map((field) => [field.name, field.type === 'checkbox' ? Boolean(editing?.[field.name]) : editing?.[field.name] ?? '']))); }, [editing, fields, reset]);
 
   const shownFields = fields.filter((field) => !field.name.endsWith('Vi') && !field.name.endsWith('En') || field.name.endsWith(language === 'vi' ? 'Vi' : 'En'));

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import type { AdminResource } from '@/lib/admin-resources';
@@ -10,6 +10,10 @@ export type AdminField = { name: string; label: string; type?: 'text' | 'textare
 type Item = Record<string, unknown> & { id: string };
 type Values = Record<string, unknown>;
 const formSchema = z.record(z.string(), z.unknown());
+
+function copySuffix() {
+  return '-copy-' + Date.now().toString().slice(-6);
+}
 
 function defaultValues(fields: AdminField[], item?: Item | null) {
   return Object.fromEntries(fields.map((field) => {
@@ -31,14 +35,22 @@ export function AdminResourceManager({ resource, titleField, fields }: { resourc
   const [loading, setLoading] = useState(true);
   const { register, control, reset, handleSubmit, formState: { isSubmitting, isDirty } } = useForm<Values>({ defaultValues: defaultValues(fields) });
 
-  const refresh = async () => {
-    const response = await fetch('/api/admin/' + resource);
+  const endpoint = '/api/admin/' + resource;
+  const refresh = useCallback(async () => {
+    const response = await fetch(endpoint);
     const body = await response.json() as { data?: Item[] };
     setItems(body.data || []);
     setLoading(false);
-  };
+  }, [endpoint]);
 
-  useEffect(() => { void refresh(); }, [resource]);
+  useEffect(() => {
+    let active = true;
+    void fetch(endpoint)
+      .then((response) => response.json() as Promise<{ data?: Item[] }>)
+      .then((body) => { if (active) { setItems(body.data || []); setLoading(false); } })
+      .catch(() => { if (active) { setNotice('Không thể tải dữ liệu.'); setLoading(false); } });
+    return () => { active = false; };
+  }, [endpoint]);
   useEffect(() => { reset(defaultValues(fields, editing)); }, [editing, fields, reset]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => { if (isDirty) event.preventDefault(); };
@@ -82,7 +94,7 @@ export function AdminResourceManager({ resource, titleField, fields }: { resourc
 
   const duplicate = async (item: Item) => {
     const payload = normalize(defaultValues(fields, item));
-    const suffix = '-copy-' + Date.now().toString().slice(-6);
+    const suffix = copySuffix();
     for (const key of ['slugVi', 'slugEn', 'key']) if (typeof payload[key] === 'string') payload[key] = payload[key] + suffix;
     for (const key of ['titleVi', 'titleEn', 'nameVi', 'nameEn']) if (typeof payload[key] === 'string') payload[key] = payload[key] + ' (copy)';
     if ('published' in payload) payload.published = false;
@@ -120,7 +132,7 @@ export function AdminResourceManager({ resource, titleField, fields }: { resourc
           <div><strong>{String(item[titleField] || item.id)}</strong><span className={item.published === true ? 'is-published' : ''}>{item.published === true ? 'Đã xuất bản' : 'Bản nháp'}</span></div>
           <p>{String(item.descriptionVi || item.excerptVi || item.answerVi || item.key || '')}</p>
           <small>Cập nhật {item.updatedAt ? new Date(String(item.updatedAt)).toLocaleDateString('vi-VN') : '—'}</small>
-          <div><button type="button" onClick={() => setEditing(item)}>Chỉnh sửa</button><button type="button" onClick={() => duplicate(item)}>Nh�n b?n</button><button className="is-danger" type="button" onClick={() => setDeleting(item)}>Xóa</button></div>
+          <div><button type="button" onClick={() => setEditing(item)}>Chỉnh sửa</button><button type="button" onClick={() => duplicate(item)}>Nhân bản</button><button className="is-danger" type="button" onClick={() => setDeleting(item)}>Xóa</button></div>
         </article>) : <div className="admin-empty"><strong>Chưa có nội dung.</strong><p>Nhấn “Thêm mới” để bắt đầu.</p></div>}
         {pages > 1 && <div className="admin-pagination"><button disabled={page === 1} onClick={() => setPage((value) => value - 1)}>←</button><span>Trang {page}/{pages}</span><button disabled={page === pages} onClick={() => setPage((value) => value + 1)}>→</button></div>}
       </section>

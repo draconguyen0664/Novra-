@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, KeyboardEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { FormEvent, KeyboardEvent, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import type { Locale } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionaries';
@@ -17,8 +17,8 @@ type AiResponse =
 
 export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['aiConsultation'] }) {
   const [prompt, setPrompt] = useState('');
-  const sessionId = useRef('');
-  if (!sessionId.current && typeof crypto !== 'undefined') sessionId.current = crypto.randomUUID();
+  const generatedSessionId = useId();
+  const sessionId = useRef(`novra-${generatedSessionId.replace(/:/g, '')}`);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: 'initial', role: 'assistant', content: copy.initialMessage },
   ]);
