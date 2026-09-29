@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { getDictionary } from '@/i18n/dictionaries';
 import { isLocale, locales } from '@/i18n/config';
+import { getSiteChrome } from '@/lib/cms-public';
 import '../globals.css';
 import '../../styles/lower-sections.css';
 import '../../styles/novra-sections.css';
@@ -19,6 +20,6 @@ export function generateStaticParams() { return locales.map((locale) => ({ local
 export default async function LocaleLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const dictionary = await getDictionary(locale);
-  return <html lang={locale} className={lausanne.variable}><body><a href="#main" className="skip-link">{dictionary.common.skipToContent}</a><Header locale={locale} dictionary={dictionary} />{children}<Footer locale={locale} dictionary={dictionary} /><MotionController /><StructuredData locale={locale} dictionary={dictionary} /></body></html>;
+  const [dictionary, chrome] = await Promise.all([getDictionary(locale), getSiteChrome(locale)]);
+  return <html lang={locale} className={lausanne.variable}><body><a href="#main" className="skip-link">{dictionary.common.skipToContent}</a><Header locale={locale} dictionary={dictionary} navigationItems={chrome.navigation} />{children}<Footer locale={locale} dictionary={dictionary} settings={chrome.settings} /><MotionController /><StructuredData locale={locale} dictionary={dictionary} /></body></html>;
 }

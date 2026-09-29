@@ -81,3 +81,4 @@
 .fan-card-hover img{pointer-events:none;user-select:none}
 @media(hover:hover) and (pointer:fine){.fan-card-motion:hover{z-index:1000!important}.fan-card-motion:hover .fan-card-hover{transform:translateY(-18px) scale(1.035) rotate(var(--hover-counter-angle));box-shadow:-30px 18px 54px #00000070}}
 @media(max-width:809px){.fan-card-motion{height:48%}.fan-card-hover{border-radius:6px}}
+.cms-home{display:flex;flex-direction:column}.cms-home>[hidden]{display:none!important}.cms-contact-slot{display:block}

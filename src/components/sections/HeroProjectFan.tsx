@@ -4,14 +4,12 @@ import Image from 'next/image';
 import { useLayoutEffect, useRef, type CSSProperties } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { heroCards } from '@/data/portfolio';
+import { heroCards as defaultHeroCards } from '@/data/portfolio';
+import type { PublicHeroCard } from '@/lib/cms-public';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const cardAngles = heroCards.map((_, index) => -52.75 + index * 12.5);
-const maxAngle = Math.max(...cardAngles.map(Math.abs));
-
-const getInitialCardState = (angle: number) => {
+const getInitialCardState = (angle: number, maxAngle: number) => {
   const depth = Math.abs(angle) / maxAngle;
   return {
     x: -(angle / maxAngle) * 38,
@@ -21,7 +19,10 @@ const getInitialCardState = (angle: number) => {
   };
 };
 
-export function HeroProjectFan({ label, cardLabel }: { label: string; cardLabel: string }) {
+export function HeroProjectFan({ label, cardLabel, cards: cmsCards }: { label: string; cardLabel: string; cards?: PublicHeroCard[] }) {
+  const cards: PublicHeroCard[] = cmsCards?.length ? cmsCards : defaultHeroCards;
+  const cardAngles = cards.map((_, index) => -((cards.length - 1) * 6.25) + index * 12.5);
+  const maxAngle = Math.max(...cardAngles.map(Math.abs), 1);
   const visualRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
   const parallaxRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -68,7 +69,7 @@ export function HeroProjectFan({ label, cardLabel }: { label: string; cardLabel:
         cards.forEach((card, index) => {
           gsap.set(card, {
             xPercent: -50,
-            ...getInitialCardState(cardAngles[index]),
+            ...getInitialCardState(cardAngles[index], maxAngle),
             autoAlpha: 0,
           });
         });
@@ -155,9 +156,9 @@ export function HeroProjectFan({ label, cardLabel }: { label: string; cardLabel:
     <div ref={visualRef} className="shell hero-visual">
       <div className="fan-stage" aria-label={label}>
         <div className="fan-cards">
-          {heroCards.map((card, index) => {
+          {cards.map((card, index) => {
             const angle = cardAngles[index];
-            const initial = getInitialCardState(angle);
+            const initial = getInitialCardState(angle, maxAngle);
             const style = {
               '--fan-angle': `${angle}deg`,
               '--hover-counter-angle': `${angle * -0.08}deg`,
@@ -175,7 +176,7 @@ export function HeroProjectFan({ label, cardLabel }: { label: string; cardLabel:
               >
                 <div ref={(element) => { parallaxRefs.current[index] = element; }} className="fan-card-parallax">
                   <div ref={(element) => { pointerRefs.current[index] = element; }} className="fan-card-pointer">
-                    <div className="fan-card-hover">
+                    <a className="fan-card-hover" href={card.href || undefined} target={card.href ? "_blank" : undefined} rel={card.href ? "noreferrer" : undefined}>
                       <Image
                         src={card.src}
                         alt={`${cardLabel} ${index + 1}`}
@@ -184,7 +185,7 @@ export function HeroProjectFan({ label, cardLabel }: { label: string; cardLabel:
                         priority={index >= 2 && index <= 6}
                         draggable={false}
                       />
-                    </div>
+                    </a>
                   </div>
                 </div>
               </div>

@@ -1,0 +1,2 @@
+import { LeadsTable } from '@/components/admin/LeadsTable';
+export default function Page() { return <><header className="admin-page-head"><div><p>CRM</p><h1>Khách hàng / Leads</h1><span>Tất cả yêu cầu từ form liên hệ.</span></div></header><LeadsTable /></>; }

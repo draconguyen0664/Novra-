@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,15 +10,15 @@ import { AnimatedButton } from './AnimatedButton';
 import { AnimatedNavLink } from './AnimatedNavLink';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-type Props = { locale: Locale; dictionary: Dictionary };
+type Props = { locale: Locale; dictionary: Dictionary; navigationItems?: { label: string; href: string; openInNewTab: boolean }[] };
 
-export function Header({ locale, dictionary }: Props) {
+export function Header({ locale, dictionary, navigationItems = [] }: Props) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const toggle = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const { navigation, common } = dictionary;
-  const items = [
+  const fallbackItems = [
     { label: navigation.home, href: localePath(locale, 'home') },
     { label: navigation.services, href: localePath(locale, 'services') },
     { label: navigation.templates, href: `${localePath(locale, 'home')}#kho-giao-dien` },
@@ -26,6 +26,7 @@ export function Header({ locale, dictionary }: Props) {
     { label: navigation.blog, href: localePath(locale, 'blog') },
     { label: navigation.pricing, href: localePath(locale, 'pricing') },
   ];
+  const items: { label: string; href: string; openInNewTab: boolean }[] = navigationItems.length ? navigationItems : fallbackItems.map((item) => ({ ...item, openInNewTab: false }));
 
   useEffect(() => {
     if (!open) return;
@@ -46,7 +47,7 @@ export function Header({ locale, dictionary }: Props) {
   }, [open]);
 
   const close = () => setOpen(false);
-  const navigationLinks = (mobile = false) => items.map((item) => <AnimatedNavLink key={`${mobile ? 'mobile' : 'desktop'}-${item.href}`} href={item.href} label={item.label} active={item.href.split('#')[0] === pathname && !item.href.includes('#')} onClick={close} />);
+  const navigationLinks = (mobile = false) => items.map((item) => <AnimatedNavLink key={`${mobile ? 'mobile' : 'desktop'}-${item.href}`} href={item.href} label={item.label} active={item.href.split('#')[0] === pathname && !item.href.includes('#')} newTab={item.openInNewTab} onClick={close} />);
 
   return <header className={`site-header ${open ? 'menu-open' : ''}`}>
     <nav className="shell flex items-center justify-between" aria-label={common.mainNavigation}>

@@ -12,11 +12,13 @@ type ChatMessage = {
 };
 
 type AiResponse =
-  | { success: true; message: string }
+  | { success: true; message: string; sessionId?: string }
   | { success: false; code?: string; message?: string };
 
 export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['aiConsultation'] }) {
   const [prompt, setPrompt] = useState('');
+  const sessionId = useRef('');
+  if (!sessionId.current && typeof crypto !== 'undefined') sessionId.current = crypto.randomUUID();
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: 'initial', role: 'assistant', content: copy.initialMessage },
   ]);
@@ -89,6 +91,7 @@ export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['a
           message,
           locale,
           history: historyMessages.slice(-16).map(({ role, content }) => ({ role, content })),
+          sessionId: sessionId.current || undefined,
         }),
       });
       const body = await response.json().catch(() => null) as AiResponse | null;
@@ -101,6 +104,7 @@ export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['a
         return;
       }
 
+      if (body.sessionId) sessionId.current = body.sessionId;
       setMessages((current) => [...current, { id: nextMessageId('assistant'), role: 'assistant', content: body.message }]);
       setState('success');
     } catch {
@@ -183,7 +187,7 @@ export function CapabilitiesAccordion({ groups }: { groups: Dictionary['capabili
   return <div className="ximi-capability-list">{groups.map((group, index) => { const expanded = open === index; const panelId = `capability-panel-${index}`; return <article className={`ximi-capability${expanded ? ' is-open' : ''}`} key={group.title}><h3><button type="button" aria-expanded={expanded} aria-controls={panelId} onClick={() => setOpen(expanded ? -1 : index)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{group.title}</strong><i aria-hidden="true" /></button></h3><div className="ximi-capability-panel" id={panelId} aria-hidden={!expanded}><ul>{group.items.map((item) => <li key={item}>{item}</li>)}</ul></div></article>; })}</div>;
 }
 
-export function XimiFaqAccordion({ items }: { items: Dictionary['faq']['items'] }) {
+export function XimiFaqAccordion({ items }: { items: readonly { question: string; answer: string }[] }) {
   const [open, setOpen] = useState(0);
   const answers = useRef<Array<HTMLDivElement | null>>([]);
   const mounted = useRef(false);

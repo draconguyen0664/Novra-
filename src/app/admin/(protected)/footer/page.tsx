@@ -1,0 +1,2 @@
+import { SiteSettingsForm } from '@/components/admin/SiteSettingsForm';
+export default function Page() { return <><header className="admin-page-head"><div><p>WEBSITE</p><h1>Footer</h1><span>Quản lý nội dung chân trang song ngữ.</span></div></header><SiteSettingsForm mode="footer" /></>; }

@@ -1,9 +1,11 @@
+import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { buildNovraAiInstructions } from '@/lib/ai-consultation';
 import { getOpenAIClient, getOpenAIModel } from '@/lib/openai';
 import { getClientIp, hashIdentifier, hasTrustedOrigin, rateLimit, readJsonBody } from '@/lib/security';
 import { getDictionary } from '@/i18n/dictionaries';
+import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
 
@@ -16,6 +18,7 @@ const requestSchema = z.object({
   message: z.string().trim().min(2).max(3000),
   locale: z.enum(['vi', 'en']),
   history: z.array(historyItemSchema).max(20).optional().default([]),
+  sessionId: z.string().uuid().optional(),
 });
 
 type ErrorCode = 'INVALID_ORIGIN' | 'INVALID_INPUT' | 'AI_NOT_CONFIGURED' | 'AI_PROVIDER_ERROR' | 'RATE_LIMITED';
@@ -68,8 +71,14 @@ export async function POST(request: NextRequest) {
     const assistantMessage = response.output_text.trim();
     if (!assistantMessage) throw new Error('OpenAI returned an empty response.');
 
+    const sessionId = parsed.data.sessionId || randomUUID();
+    const conversation = await prisma.aiConversation.upsert({ where: { sessionId }, create: { sessionId, locale }, update: { locale } });
+    await prisma.aiMessage.createMany({ data: [
+      { conversationId: conversation.id, role: 'USER', content: message },
+      { conversationId: conversation.id, role: 'ASSISTANT', content: assistantMessage },
+    ] });
     console.info('POST /api/ai-consultation', { status: 200, model: getOpenAIModel() });
-    return NextResponse.json({ success: true, message: assistantMessage });
+    return NextResponse.json({ success: true, message: assistantMessage, sessionId });
   } catch (error) {
     const providerError = error as { name?: unknown; message?: unknown; status?: unknown };
     console.error('AI consultation provider error', {

@@ -6,15 +6,18 @@ type AnimatedNavLinkProps = {
   label: string;
   active?: boolean;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
+  newTab?: boolean;
 };
 
-export function AnimatedNavLink({ href, label, active = false, onClick }: AnimatedNavLinkProps) {
+export function AnimatedNavLink({ href, label, active = false, onClick, newTab = false }: AnimatedNavLinkProps) {
   return (
     <Link
       className={`nav-link${active ? ' is-active' : ''}`}
       href={href}
       aria-current={active ? 'location' : undefined}
       onClick={onClick}
+      target={newTab ? '_blank' : undefined}
+      rel={newTab ? 'noreferrer' : undefined}
     >
       <span className="nav-mask">
         <span className="nav-track">

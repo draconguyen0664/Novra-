@@ -3,10 +3,11 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import type { PublicSection } from '@/lib/cms-public';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function ExperienceMotion({ words, label }: { words: readonly string[]; label: string }) {
+export function ExperienceMotion({ words, label, config }: { words: readonly string[]; label: string; config?: PublicSection }) {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const wordRefs = useRef<Array<HTMLParagraphElement | null>>([]);

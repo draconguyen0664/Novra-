@@ -1,0 +1,2 @@
+import { MediaLibrary } from '@/components/admin/MediaLibrary';
+export default function Page() { return <><header className="admin-page-head"><div><p>MEDIA</p><h1>Thư viện</h1><span>JPG, PNG, WEBP, SVG · tối đa 10 MB.</span></div></header><MediaLibrary /></>; }

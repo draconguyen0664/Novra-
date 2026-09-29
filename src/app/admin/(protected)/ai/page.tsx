@@ -1,0 +1,2 @@
+import { AiConversations } from '@/components/admin/AiConversations';
+export default function Page() { return <><header className="admin-page-head"><div><p>CRM</p><h1>AI Conversations</h1><span>Hội thoại ẩn danh; chỉ chuyển thành lead khi có thông tin phù hợp.</span></div></header><AiConversations /></>; }

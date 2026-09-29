@@ -1,0 +1,2 @@
+import { SiteSettingsForm } from '@/components/admin/SiteSettingsForm';
+export default function Page() { return <><header className="admin-page-head"><div><p>HỆ THỐNG</p><h1>Cài đặt</h1><span>Thông tin công ty, thương hiệu và analytics.</span></div></header><SiteSettingsForm mode="settings" /></>; }
