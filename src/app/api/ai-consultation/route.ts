@@ -59,26 +59,20 @@ export async function POST(request: NextRequest) {
     return errorResponse(503, 'AI_NOT_CONFIGURED', dictionary.aiConsultation.unavailable);
   }
 
+  let assistantMessage: string;
   try {
     const instructions = await buildNovraAiInstructions(locale);
     const response = await openai.responses.create({
       model: getOpenAIModel(),
       instructions,
       input: [...history, { role: 'user' as const, content: message }],
-      max_output_tokens: 450,
+      reasoning: { effort: 'low' },
+      text: { verbosity: 'low' },
+      max_output_tokens: 900,
       store: false,
     });
-    const assistantMessage = response.output_text.trim();
+    assistantMessage = response.output_text.trim();
     if (!assistantMessage) throw new Error('OpenAI returned an empty response.');
-
-    const sessionId = parsed.data.sessionId || randomUUID();
-    const conversation = await prisma.aiConversation.upsert({ where: { sessionId }, create: { sessionId, locale }, update: { locale } });
-    await prisma.aiMessage.createMany({ data: [
-      { conversationId: conversation.id, role: 'USER', content: message },
-      { conversationId: conversation.id, role: 'ASSISTANT', content: assistantMessage },
-    ] });
-    console.info('POST /api/ai-consultation', { status: 200, model: getOpenAIModel() });
-    return NextResponse.json({ success: true, message: assistantMessage, sessionId });
   } catch (error) {
     const providerError = error as { name?: unknown; message?: unknown; status?: unknown };
     console.error('AI consultation provider error', {
@@ -88,4 +82,25 @@ export async function POST(request: NextRequest) {
     });
     return errorResponse(502, 'AI_PROVIDER_ERROR', dictionary.aiConsultation.error);
   }
+
+  const sessionId = parsed.data.sessionId || randomUUID();
+  try {
+    const conversation = await prisma.aiConversation.upsert({
+      where: { sessionId },
+      create: { sessionId, locale },
+      update: { locale },
+    });
+    await prisma.aiMessage.createMany({ data: [
+      { conversationId: conversation.id, role: 'USER', content: message },
+      { conversationId: conversation.id, role: 'ASSISTANT', content: assistantMessage },
+    ] });
+  } catch (error) {
+    console.error('AI consultation persistence error', {
+      name: error instanceof Error ? error.name : 'UnknownError',
+      message: error instanceof Error ? error.message.slice(0, 300) : 'Unknown persistence error',
+    });
+  }
+
+  console.info('POST /api/ai-consultation', { status: 200, model: getOpenAIModel() });
+  return NextResponse.json({ success: true, message: assistantMessage, sessionId });
 }

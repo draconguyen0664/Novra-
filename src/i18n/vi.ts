@@ -75,7 +75,7 @@ export const vi = {
     retry: 'Thử lại',
     note: 'AI có thể nhầm lẫn. Báo giá và cam kết chính thức được xác nhận bằng văn bản.',
     unavailable: 'Novra AI chưa được kết nối. Vui lòng thử lại sau.',
-    error: 'Novra AI chưa thể phản hồi. Bạn có thể thử gửi lại.',
+    error: 'Novra AI chưa thể phản hồi. Vui lòng thử lại.',
     rateLimited: 'Bạn gửi yêu cầu quá nhanh. Vui lòng thử lại sau.',
   },
   services: {
