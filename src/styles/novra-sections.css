@@ -66,3 +66,35 @@
 .ximi-ai-retry:hover,.ximi-ai-retry:focus-visible{color:#000;outline:none}
 .ximi-ai-retry:disabled,.ximi-suggestions button:disabled{cursor:not-allowed;opacity:.45;transform:none}
 @media(max-width:809px){.ximi-ai-notice{flex-wrap:wrap}.ximi-ai-retry{margin-left:26px}}
+/* Five-plan pricing layout */
+.ximi-pricing-grid{grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible;padding-bottom:0}
+.ximi-price-panel{min-width:0;border-bottom:1px solid #cacac5;transition:transform .35s cubic-bezier(.22,1,.36,1),background-color .35s,color .35s,border-color .35s,outline-color .35s}
+.ximi-price-panel h3{transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.ximi-plan-price strong{max-width:100%;overflow-wrap:anywhere;text-wrap:balance}
+@media(min-width:1200px) and (max-width:1535px){
+  .ximi-pricing-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ximi-price-panel{min-height:700px}
+  .ximi-price-panel:nth-child(3n+1){border-left:1px solid #cacac5}
+}
+@media(min-width:640px) and (max-width:1199px){
+  .ximi-pricing-grid{width:100%;margin-right:0;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;scroll-snap-type:none;padding-bottom:0}
+  .ximi-price-panel{min-height:680px;scroll-snap-align:none}
+  .ximi-price-panel:nth-child(odd){border-left:1px solid #cacac5}
+}
+@media(max-width:639px){
+  .ximi-pricing-grid{width:100%;margin-right:0;grid-template-columns:1fr;overflow:visible;scroll-snap-type:none;padding-bottom:0}
+  .ximi-price-panel{min-height:0;padding:26px 20px;scroll-snap-align:none;border-left:1px solid #cacac5}
+  .ximi-price-panel h3{min-height:0;margin:42px 0 28px}
+  .ximi-plan-price{min-height:112px}
+}
+@media(hover:hover) and (pointer:fine){
+  .ximi-price-panel:hover{border-color:#777;outline:1px solid #777;outline-offset:-1px}
+  .ximi-price-panel:hover h3{transform:translateX(4px)}
+  .ximi-price-panel.is-recommended:hover{border-color:#111;outline-color:#111}
+}
+@media(hover:none),(pointer:coarse){
+  .ximi-price-panel:hover{transform:none}
+  .ximi-price-panel:hover h3,.ximi-price-panel:hover .ximi-plan-price strong,.ximi-price-panel>a:hover span{transform:none}
+  .ximi-price-panel:not(.is-recommended):hover{background:#fff;color:#0a0a0a}
+  .ximi-price-panel.is-recommended:hover{background:#111;color:#fff}
+}

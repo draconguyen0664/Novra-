@@ -213,13 +213,17 @@ model PricingPlan {
   nameEn        String
   labelVi       String
   labelEn       String
-  priceFrom     Int
+  priceFrom     Int?
   originalPrice Int?
   currency      String           @default("VND")
   durationVi    String
   durationEn    String
   descriptionVi String
   descriptionEn String
+  bestForVi      String?
+  bestForEn      String?
+  ctaVi          String?
+  ctaEn          String?
   featuresVi    String[]
   featuresEn    String[]
   recommended   Boolean          @default(false)

@@ -64,12 +64,13 @@ export const en = {
     items: [['Fast delivery', 'Websites in 3–7 days, applications in 1–2 weeks'], ['Easy to extend', 'Add pages, forms or features later without rebuilding everything'], ['Dedicated support', 'Clear advice and free usage guidance after handover'], ['5-year warranty', 'Technical defects within the accepted scope are covered for five years']],
   },
   pricing: {
-    kicker: 'CLEAR PRICING', heading: ['SERVICE', 'PRICING'], copy: 'Compare cost, timeline, scope and SEO before your project starts.', startingAt: 'Starting at', duration: 'Timeline', bestFor: 'Best for',
+    kicker: 'CLEAR PRICING', heading: ['SERVICE', 'PRICING'], copy: 'Compare reference scope and cost for websites, Web Apps and Mobile Apps before your project starts.', startingAt: 'Starting at', duration: 'Timeline', bestFor: 'Best for',
     plans: [
       { key: 'landing-page', name: 'Landing Page', label: 'Fast start', originalPrice: '3,000,000 VND', price: '1,888,000 VND', time: '3–5 days', bestFor: 'Campaigns, service launches and lead forms', features: ['1 responsive interface', 'Technical SEO foundation', 'Contact form', 'Basic GA4 + Pixel', '5-year warranty', '1 year hosting included'], cta: 'Get a Landing Page quote' },
       { key: 'business-website', name: 'Business Website', label: 'Recommended', originalPrice: '8,000,000 VND', price: '5,000,000 VND', time: '7–14 days', bestFor: 'Companies, portfolios and services that need durable SEO', features: ['Brand-led UI/UX', 'Advanced on-page SEO', 'Easy-to-update CMS', 'GA4', 'Search Console', 'Sitemap', '5-year warranty'], cta: 'Discuss the business plan', recommended: true },
       { key: 'ecommerce', name: 'E-commerce Website', label: 'Growth', originalPrice: '15,000,000 VND', price: '10,000,000 VND', time: '3–4 weeks', bestFor: 'Shops, product catalogs and online sales', features: ['Custom commerce interface', 'Product schema', 'Product management', 'Order management', 'Cart', 'Conversion tracking', '5-year warranty'], cta: 'Build an e-commerce website' },
       { key: 'web-app', name: 'Custom Web App', label: 'Tailored', price: 'From 10,000,000 VND', time: 'Scope based', bestFor: 'Dashboards, lightweight CRM, booking and internal workflows', features: ['Prototype before development', 'Custom backend / API', 'Dashboard', 'Roles and permissions', 'Custom workflow', 'Reports', '5-year warranty'], cta: 'Discuss a solution' },
+      { key: 'mobile-app', name: 'MOBILE APP', label: 'MOBILE DEVELOPMENT', price: 'Custom quote', time: '4–8 weeks', bestFor: 'iOS/Android apps, booking, ecommerce, membership, management, loyalty and MVP products.', features: ['Mobile UI/UX Design', 'Flutter / React Native when appropriate', 'iOS & Android', 'Backend / API', 'Push Notifications', 'Authentication / Roles', 'Payment integration when needed', 'Admin Dashboard', 'Project-based warranty'], cta: 'Discuss Mobile App' },
     ],
   },
   capabilities: {
@@ -118,7 +119,7 @@ export const en = {
     home: { title: 'Novra | Website, Web App and Digital Product Design', description: 'Design and development of websites, web apps and digital products with clear experiences, measurable value and simple operation.' },
     services: { title: 'Website and Web App Design Services', description: 'Custom website, web app, UI/UX and SEO services from Novra.' },
     projects: { title: 'Website and Digital Product Projects', description: 'Explore websites, web apps and digital products designed and developed by Novra.' },
-    pricing: { title: 'Website Design Pricing', description: 'Clear pricing for Landing Pages, business websites, e-commerce websites and custom Web Apps.' },
+    pricing: { title: 'Web & Mobile App Pricing', description: 'Clear reference pricing for Landing Pages, websites, Web Apps and Mobile Apps.' },
     blog: { title: 'Design and Technology Blog', description: 'Insights about website design, UI/UX, SEO and digital product development.' },
     contact: { title: 'Contact Novra', description: 'Send a website or digital product inquiry and get practical guidance from Novra.' },
   },

@@ -64,7 +64,10 @@ async function loadPublishedContext(locale: Locale) {
             const duration = locale === 'vi' ? plan.durationVi : plan.durationEn;
             const description = locale === 'vi' ? plan.descriptionVi : plan.descriptionEn;
             const features = locale === 'vi' ? plan.featuresVi : plan.featuresEn;
-            return `${name}: ${formatVnd(plan.priceFrom, locale)}; ${duration}; ${description}; ${features.join(', ')}`;
+            const price = plan.priceFrom === null
+              ? locale === 'vi' ? 'Theo phạm vi, liên hệ báo giá' : 'Custom quote based on scope'
+              : formatVnd(plan.priceFrom, locale);
+            return `${name}: ${price}; ${duration}; ${description}; ${features.join(', ')}`;
           })
         : dictionary.pricing.plans.map((plan) => `${plan.name}: ${plan.price}; ${plan.time}; ${plan.bestFor}; ${plan.features.join(', ')}`),
       process: dictionary.process.steps.map((step) => `${step[0]} ${step[1]}: ${step[2]}`),

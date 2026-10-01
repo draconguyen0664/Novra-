@@ -8,7 +8,7 @@ export type PublicSection = { enabled: boolean; sortOrder: number };
 export type PublicSections = Record<string, PublicSection>;
 export type PublicProject = { name: string; category: string; description: string; image: string; href: string };
 export type PublicHeroCard = { src: string; href?: string | null };
-export type PublicPricingPlan = { key: string; name: string; label: string; price: string; originalPrice?: string; time: string; bestFor: string; features: readonly string[]; cta: string; recommended?: boolean };
+export type PublicPricingPlan = { key: string; name: string; label: string; price: string; priceCaption?: string; originalPrice?: string; time: string; bestFor: string; features: readonly string[]; cta: string; recommended?: boolean };
 
 function content(value: Prisma.JsonValue | null, locale: Locale) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
@@ -57,13 +57,24 @@ export async function getHomepageCms(locale: Locale, source: Dictionary) {
       } else applyCopy(dictionary, row.key, localized);
     }
     if (serviceRows.length) services = serviceRows.map((row) => ({ title: locale === 'vi' ? row.nameVi : row.nameEn, description: locale === 'vi' ? row.descriptionVi : row.descriptionEn }));
-    if (pricingRows.length) pricing = pricingRows.map((row) => ({
-      key: row.key, name: locale === 'vi' ? row.nameVi : row.nameEn, label: locale === 'vi' ? row.labelVi : row.labelEn,
-      price: Number(row.priceFrom).toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US') + ' ' + row.currency,
-      originalPrice: row.originalPrice ? Number(row.originalPrice).toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US') + ' ' + row.currency : undefined,
-      time: locale === 'vi' ? row.durationVi : row.durationEn, bestFor: locale === 'vi' ? row.descriptionVi : row.descriptionEn,
-      features: locale === 'vi' ? row.featuresVi : row.featuresEn, cta: dictionary.navigation.contact, recommended: row.recommended,
-    }));
+    if (pricingRows.length) pricing = pricingRows.map((row) => {
+      const hasStartingPrice = row.priceFrom !== null;
+      return {
+        key: row.key,
+        name: locale === 'vi' ? row.nameVi : row.nameEn,
+        label: locale === 'vi' ? row.labelVi : row.labelEn,
+        price: hasStartingPrice
+          ? Number(row.priceFrom).toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US') + ' ' + row.currency
+          : locale === 'vi' ? 'Theo phạm vi' : 'Custom quote',
+        priceCaption: hasStartingPrice ? dictionary.pricing.startingAt : undefined,
+        originalPrice: row.originalPrice ? Number(row.originalPrice).toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US') + ' ' + row.currency : undefined,
+        time: locale === 'vi' ? row.durationVi : row.durationEn,
+        bestFor: locale === 'vi' ? row.bestForVi || row.descriptionVi : row.bestForEn || row.descriptionEn,
+        features: locale === 'vi' ? row.featuresVi : row.featuresEn,
+        cta: locale === 'vi' ? row.ctaVi || dictionary.navigation.contact : row.ctaEn || dictionary.navigation.contact,
+        recommended: row.recommended,
+      };
+    });
     if (faqRows.length) faqs = faqRows.map((row) => ({ question: locale === 'vi' ? row.questionVi : row.questionEn, answer: locale === 'vi' ? row.answerVi : row.answerEn }));
     if (projectRows.length) projects = projectRows.map((row) => ({ name: locale === 'vi' ? row.titleVi : row.titleEn, category: row.category, description: locale === 'vi' ? row.descriptionVi : row.descriptionEn, image: row.coverImage, href: '/' + locale + '/du-an/' + (locale === 'vi' ? row.slugVi : row.slugEn) }));
     if (cardRows.length) heroCards = cardRows.map((row) => ({ src: row.image, href: row.link }));

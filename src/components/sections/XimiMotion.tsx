@@ -98,9 +98,7 @@ export function XimiMotion() {
         }
 
         const panels = gsap.utils.toArray<HTMLElement>('.ximi-price-panel');
-        const recommended = panels.find((panel) => panel.classList.contains('is-recommended'));
-        const panelOrder = [...panels.filter((panel) => panel !== recommended), ...(recommended ? [recommended] : [])];
-        gsap.fromTo(panelOrder, { y: (index) => 50 + index * 16, scale: (index) => index === panelOrder.length - 1 ? 0.96 : 1, autoAlpha: 0 }, {
+        gsap.fromTo(panels, { y: 56, scale: 0.985, autoAlpha: 0 }, {
           y: 0, scale: 1, autoAlpha: 1, duration: 0.82, stagger: 0.1, ease: 'power3.out',
           scrollTrigger: { trigger: '.ximi-pricing-grid', start: 'top 82%', once: true },
         });

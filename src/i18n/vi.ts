@@ -115,7 +115,7 @@ export const vi = {
   pricing: {
     kicker: 'CHI PHÍ MINH BẠCH',
     heading: ['BẢNG GIÁ', 'DỊCH VỤ'],
-    copy: 'So sánh rõ giá, thời gian, phạm vi và SEO trước khi bắt đầu dự án.',
+    copy: 'So sánh rõ phạm vi và chi phí tham khảo cho website, Web App và Mobile App trước khi bắt đầu dự án.',
     startingAt: 'Khởi điểm',
     duration: 'Thời gian',
     bestFor: 'Phù hợp',
@@ -124,6 +124,7 @@ export const vi = {
       { key: 'business-website', name: 'Website doanh nghiệp', label: 'Đề xuất', originalPrice: '8.000.000đ', price: '5.000.000đ', time: '7–14 ngày', bestFor: 'Công ty, portfolio, dịch vụ cần SEO bền vững', features: ['UI/UX theo thương hiệu', 'SEO on-page nâng cao', 'CMS dễ cập nhật', 'GA4', 'Search Console', 'Sitemap', 'Bảo hành 5 năm'], cta: 'Tư vấn gói doanh nghiệp', recommended: true },
       { key: 'ecommerce', name: 'Website bán hàng', label: 'Tăng trưởng', originalPrice: '15.000.000đ', price: '10.000.000đ', time: '3–4 tuần', bestFor: 'Cửa hàng, danh mục sản phẩm, bán hàng trực tuyến', features: ['Giao diện bán hàng riêng', 'Schema sản phẩm', 'Quản lý sản phẩm', 'Quản lý đơn hàng', 'Giỏ hàng', 'Theo dõi chuyển đổi', 'Bảo hành 5 năm'], cta: 'Xây website bán hàng' },
       { key: 'web-app', name: 'Web App theo yêu cầu', label: 'Theo yêu cầu', price: 'Từ 10.000.000đ', time: 'Theo phạm vi', bestFor: 'Dashboard, CRM nhỏ, đặt lịch, quy trình nội bộ', features: ['Prototype trước khi code', 'Backend / API tùy chỉnh', 'Dashboard', 'Phân quyền', 'Quy trình riêng', 'Báo cáo', 'Bảo hành 5 năm'], cta: 'Trao đổi giải pháp' },
+      { key: 'mobile-app', name: 'MOBILE APP', label: 'ỨNG DỤNG DI ĐỘNG', price: 'Theo phạm vi', time: '4–8 tuần', bestFor: 'Ứng dụng iOS/Android, booking, bán hàng, thành viên, quản lý, loyalty hoặc sản phẩm MVP.', features: ['Thiết kế UI/UX app', 'Flutter / React Native tùy dự án', 'iOS & Android', 'Backend / API', 'Push Notification', 'Đăng nhập / phân quyền', 'Tích hợp thanh toán nếu cần', 'Dashboard quản trị', 'Bảo hành theo phạm vi dự án'], cta: 'Tư vấn Mobile App' },
     ],
   },
   capabilities: {
@@ -206,7 +207,7 @@ export const vi = {
     home: { title: 'Novra | Thiết kế Website, Web App và sản phẩm số', description: 'Thiết kế và phát triển website, web app và sản phẩm số với trải nghiệm rõ ràng, hiệu quả và dễ vận hành.' },
     services: { title: 'Dịch vụ thiết kế Website và Web App', description: 'Dịch vụ thiết kế website, web app, UI/UX và SEO theo yêu cầu từ Novra.' },
     projects: { title: 'Dự án Website và sản phẩm số', description: 'Khám phá các dự án website, web app và sản phẩm số do Novra thiết kế và phát triển.' },
-    pricing: { title: 'Bảng giá thiết kế Website', description: 'Bảng giá Landing Page, website doanh nghiệp, website bán hàng và Web App minh bạch.' },
+    pricing: { title: 'Bảng giá Web & Mobile App', description: 'Bảng giá Landing Page, website doanh nghiệp, website bán hàng, Web App và Mobile App.' },
     blog: { title: 'Blog thiết kế và công nghệ', description: 'Kiến thức về thiết kế website, UI/UX, SEO và phát triển sản phẩm số.' },
     contact: { title: 'Liên hệ Novra', description: 'Gửi yêu cầu dự án website hoặc sản phẩm số và nhận tư vấn từ Novra.' },
   },

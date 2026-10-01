@@ -68,7 +68,7 @@ export function AdminResourceManager({ resource, titleField, fields }: { resourc
     for (const field of fields) {
       const value = values[field.name];
       if (field.type === 'checkbox') payload[field.name] = Boolean(value);
-      else if (field.type === 'number') payload[field.name] = value === '' || value == null ? (['year', 'originalPrice'].includes(field.name) ? null : 0) : Number(value);
+      else if (field.type === 'number') payload[field.name] = value === '' || value == null ? (['year', 'priceFrom', 'originalPrice'].includes(field.name) ? null : 0) : Number(value);
       else if (field.type === 'list') payload[field.name] = String(value || '').split('\n').map((entry) => entry.trim()).filter(Boolean);
       else payload[field.name] = String(value || '').trim() || (field.required ? '' : null);
     }
