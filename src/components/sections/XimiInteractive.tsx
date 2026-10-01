@@ -17,32 +17,46 @@ type AiResponse =
 
 type MessageBlock =
   | { type: 'paragraph'; content: string }
-  | { type: 'list'; items: string[] };
+  | { type: 'list'; items: string[]; ordered: boolean };
+
+function InlineMessageText({ content }: { content: string }) {
+  return <>{content.split(/(\*\*[^*]+\*\*)/g).filter(Boolean).map((part, index) => (
+    part.startsWith('**') && part.endsWith('**')
+      ? <strong key={index}>{part.slice(2, -2)}</strong>
+      : <span key={index}>{part}</span>
+  ))}</>;
+}
 
 function ChatMessageContent({ content }: { content: string }) {
   const blocks: MessageBlock[] = [];
   let paragraph: string[] = [];
   let list: string[] = [];
+  let ordered = false;
 
   const flushParagraph = () => {
     if (paragraph.length) blocks.push({ type: 'paragraph', content: paragraph.join(' ') });
     paragraph = [];
   };
   const flushList = () => {
-    if (list.length) blocks.push({ type: 'list', items: list });
+    if (list.length) blocks.push({ type: 'list', items: list, ordered });
     list = [];
+    ordered = false;
   };
 
   for (const rawLine of content.split(/\r?\n/)) {
     const line = rawLine.trim();
     const bullet = line.match(/^[-*•]\s+(.+)/);
+    const numbered = line.match(/^\d+[.)]\s+(.+)/);
 
     if (!line) {
       flushParagraph();
       flushList();
-    } else if (bullet) {
+    } else if (bullet || numbered) {
       flushParagraph();
-      list.push(bullet[1]);
+      const nextOrdered = Boolean(numbered);
+      if (list.length && ordered !== nextOrdered) flushList();
+      ordered = nextOrdered;
+      list.push((bullet || numbered)![1]);
     } else {
       flushList();
       paragraph.push(line);
@@ -51,15 +65,20 @@ function ChatMessageContent({ content }: { content: string }) {
   flushParagraph();
   flushList();
 
+  const renderItems = (items: string[]) => items.map((item, index) => (
+    <li key={`${index}-${item}`}><InlineMessageText content={item} /></li>
+  ));
+
   return (
     <div className="ximi-chat-content">
       {blocks.map((block, index) => block.type === 'list'
-        ? <ul key={`list-${index}`}>{block.items.map((item) => <li key={item}>{item}</li>)}</ul>
-        : <p key={`paragraph-${index}`}>{block.content}</p>)}
+        ? block.ordered
+          ? <ol key={`list-${index}`}>{renderItems(block.items)}</ol>
+          : <ul key={`list-${index}`}>{renderItems(block.items)}</ul>
+        : <p key={`paragraph-${index}`}><InlineMessageText content={block.content} /></p>)}
     </div>
   );
 }
-
 export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['aiConsultation'] }) {
   const [prompt, setPrompt] = useState('');
   const sessionId = useRef('');

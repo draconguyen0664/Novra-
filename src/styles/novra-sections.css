@@ -25,8 +25,8 @@
 .ximi-chat-bubble{display:flex;align-items:flex-start;gap:9px;width:fit-content;max-width:72%;margin:0;padding:14px 17px;border-radius:18px;font-size:15px;line-height:1.58;font-weight:400;box-shadow:none;overflow-wrap:anywhere}
 .ximi-chat-content{min-width:0}
 .ximi-chat-content p{margin:0;font:inherit}
-.ximi-chat-content p+p,.ximi-chat-content p+ul,.ximi-chat-content ul+p{margin-top:.7em}
-.ximi-chat-content ul{margin:.55em 0 0;padding-left:1.15em}
+.ximi-chat-content p+p,.ximi-chat-content p+ul,.ximi-chat-content p+ol,.ximi-chat-content ul+p,.ximi-chat-content ol+p{margin-top:.7em}
+.ximi-chat-content ul,.ximi-chat-content ol{margin:.55em 0 0;padding-left:1.15em}
 .ximi-chat-content li{margin:.2em 0;padding-left:.12em}
 .ximi-chat-content strong{font-weight:600}
 .ximi-chat-ai{align-self:flex-start;background:#fff;border:1px solid #dddcd6;color:#1d1d1b;border-bottom-left-radius:6px}
