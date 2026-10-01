@@ -22,7 +22,13 @@
 .ximi-ai-status{position:static;display:flex;align-items:center;gap:8px;font-size:11px;line-height:16px;letter-spacing:.06em;text-transform:uppercase;color:#5f5f59;white-space:nowrap}
 .ximi-ai-status span{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#28a85b;box-shadow:0 0 0 4px rgba(40,168,91,.12)}
 .ximi-chat-stream{display:flex;flex-direction:column;gap:13px;height:clamp(240px,26vw,300px);margin:0;padding:28px 30px;overflow-x:hidden;overflow-y:auto;scroll-behavior:smooth;position:relative;z-index:1;scrollbar-width:thin;scrollbar-color:#c5c5bf transparent}
-.ximi-chat-bubble{display:flex;align-items:flex-start;gap:8px;width:fit-content;max-width:72%;margin:0;padding:13px 16px;border-radius:18px;font-size:15px;line-height:22px;box-shadow:none;white-space:pre-wrap;overflow-wrap:anywhere}
+.ximi-chat-bubble{display:flex;align-items:flex-start;gap:9px;width:fit-content;max-width:72%;margin:0;padding:14px 17px;border-radius:18px;font-size:15px;line-height:1.58;font-weight:400;box-shadow:none;overflow-wrap:anywhere}
+.ximi-chat-content{min-width:0}
+.ximi-chat-content p{margin:0;font:inherit}
+.ximi-chat-content p+p,.ximi-chat-content p+ul,.ximi-chat-content ul+p{margin-top:.7em}
+.ximi-chat-content ul{margin:.55em 0 0;padding-left:1.15em}
+.ximi-chat-content li{margin:.2em 0;padding-left:.12em}
+.ximi-chat-content strong{font-weight:600}
 .ximi-chat-ai{align-self:flex-start;background:#fff;border:1px solid #dddcd6;color:#1d1d1b;border-bottom-left-radius:6px}
 .ximi-chat-user{align-self:flex-end;max-width:64%;background:#111;color:#fff;border:1px solid #111;border-bottom-right-radius:6px}
 .ximi-chat-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 20px;width:20px;height:20px;border-radius:50%;background:#efefe9;font-size:10px;line-height:1}

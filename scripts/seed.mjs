@@ -1,9 +1,10 @@
-﻿import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const services = [
   { slugVi: 'website-theo-yeu-cau', slugEn: 'custom-websites', nameVi: 'Website theo yêu cầu', nameEn: 'Custom Websites', descriptionVi: 'Website phù hợp mục tiêu kinh doanh và thương hiệu.', descriptionEn: 'Websites tailored to business goals and brand.', contentVi: 'Thiết kế, phát triển, SEO nền tảng và bàn giao vận hành.', contentEn: 'Design, development, technical SEO and operational handover.' },
   { slugVi: 'web-app', slugEn: 'web-apps', nameVi: 'Web App', nameEn: 'Web Apps', descriptionVi: 'Công cụ vận hành, dashboard và hệ thống nội bộ.', descriptionEn: 'Operating tools, dashboards and internal systems.', contentVi: 'Phân tích quy trình, thiết kế UX và phát triển theo phạm vi.', contentEn: 'Workflow discovery, UX design and scoped development.' },
+  { slugVi: 'phat-trien-ung-dung-di-dong', slugEn: 'mobile-app-development', nameVi: 'Phát triển ứng dụng di động', nameEn: 'Mobile App Development', descriptionVi: 'Thiết kế và phát triển ứng dụng iOS/Android, từ MVP đến sản phẩm hoàn chỉnh, có thể kết hợp dashboard quản trị và backend API.', descriptionEn: 'Design and development of iOS and Android applications, from MVPs to production products, including admin dashboards and backend APIs when needed.', contentVi: 'Tư vấn kiến trúc phù hợp cho Flutter, React Native hoặc native sau khi làm rõ người dùng, tính năng và yêu cầu vận hành.', contentEn: 'Architecture guidance for Flutter, React Native or native development after clarifying users, features and operational requirements.' },
   { slugVi: 'seo', slugEn: 'seo', nameVi: 'SEO & tối ưu chuyển đổi', nameEn: 'SEO & Conversion', descriptionVi: 'Tối ưu khả năng tìm thấy và chuyển đổi.', descriptionEn: 'Improve discoverability and conversion.', contentVi: 'SEO kỹ thuật, cấu trúc nội dung và đo lường.', contentEn: 'Technical SEO, content structure and measurement.' },
 ];
 for (const [sortOrder, service] of services.entries()) await prisma.service.upsert({ where: { slugEn: service.slugEn }, create: { ...service, sortOrder, published: true }, update: { ...service, sortOrder, published: true } });

@@ -15,6 +15,51 @@ type AiResponse =
   | { success: true; message: string; sessionId?: string }
   | { success: false; code?: string; message?: string };
 
+type MessageBlock =
+  | { type: 'paragraph'; content: string }
+  | { type: 'list'; items: string[] };
+
+function ChatMessageContent({ content }: { content: string }) {
+  const blocks: MessageBlock[] = [];
+  let paragraph: string[] = [];
+  let list: string[] = [];
+
+  const flushParagraph = () => {
+    if (paragraph.length) blocks.push({ type: 'paragraph', content: paragraph.join(' ') });
+    paragraph = [];
+  };
+  const flushList = () => {
+    if (list.length) blocks.push({ type: 'list', items: list });
+    list = [];
+  };
+
+  for (const rawLine of content.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    const bullet = line.match(/^[-*•]\s+(.+)/);
+
+    if (!line) {
+      flushParagraph();
+      flushList();
+    } else if (bullet) {
+      flushParagraph();
+      list.push(bullet[1]);
+    } else {
+      flushList();
+      paragraph.push(line);
+    }
+  }
+  flushParagraph();
+  flushList();
+
+  return (
+    <div className="ximi-chat-content">
+      {blocks.map((block, index) => block.type === 'list'
+        ? <ul key={`list-${index}`}>{block.items.map((item) => <li key={item}>{item}</li>)}</ul>
+        : <p key={`paragraph-${index}`}>{block.content}</p>)}
+    </div>
+  );
+}
+
 export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['aiConsultation'] }) {
   const [prompt, setPrompt] = useState('');
   const sessionId = useRef('');
@@ -26,7 +71,7 @@ export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['a
   const [state, setState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const streamRef = useRef<HTMLDivElement>(null);
-  const messageElements = useRef(new Map<string, HTMLParagraphElement>());
+  const messageElements = useRef(new Map<string, HTMLDivElement>());
   const messageSequence = useRef(0);
   const lastAnimatedId = useRef('initial');
   const submitting = state === 'submitting';
@@ -138,7 +183,7 @@ export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['a
 
         <div ref={streamRef} className="ximi-chat-stream" role="log" aria-live="polite" aria-busy={submitting} aria-label={copy.conversationLabel}>
           {messages.map((message) => (
-            <p
+            <div
               key={message.id}
               ref={(element) => {
                 if (element) messageElements.current.set(message.id, element);
@@ -147,8 +192,8 @@ export function AiPrompt({ locale, copy }: { locale: Locale; copy: Dictionary['a
               className={`ximi-chat-bubble ximi-chat-${message.role === 'assistant' ? 'ai' : 'user'}${message.id === 'initial' ? ' ximi-chat-initial' : ''}`}
             >
               {message.role === 'assistant' && <span className="ximi-chat-icon" aria-hidden="true">✦</span>}
-              <span>{message.content}</span>
-            </p>
+              <ChatMessageContent content={message.content} />
+            </div>
           ))}
           {submitting && <div className="ximi-chat-bubble ximi-chat-ai ximi-chat-typing" aria-label={copy.sending}><span /><span /><span /></div>}
         </div>

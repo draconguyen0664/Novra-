@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { locales } from '@/i18n/config';
 
-export const serviceIds = ['business-website', 'landing-page', 'ecommerce', 'web-app', 'ui-ux', 'seo', 'design-system', 'consulting', 'other'] as const;
+export const serviceIds = ['business-website', 'landing-page', 'ecommerce', 'web-app', 'mobile-app', 'backend-api', 'ui-ux', 'seo', 'design-system', 'consulting', 'other'] as const;
 export const budgetIds = ['under-5m', '5-10m', '10-30m', '30-50m', 'above-50m', 'unsure'] as const;
 export const contactMethodIds = ['phone', 'zalo', 'email'] as const;
 export const contactSourceIds = ['homepage', 'contact-page'] as const;
