@@ -26,7 +26,23 @@ export function hashIdentifier(value: string) {
 export function hasTrustedOrigin(request: NextRequest) {
   const origin = request.headers.get('origin');
   if (!origin) return process.env.NODE_ENV !== 'production';
-  return origin === new URL(request.url).origin;
+
+  const trustedUrls = [
+    request.url,
+    process.env.URL,
+    process.env.DEPLOY_URL,
+    process.env.DEPLOY_PRIME_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+  ];
+
+  return trustedUrls.some((value) => {
+    if (!value) return false;
+    try {
+      return new URL(value).origin === origin;
+    } catch {
+      return false;
+    }
+  });
 }
 
 export function cleanPlainText(value: string) {
